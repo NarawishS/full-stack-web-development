@@ -6,7 +6,7 @@ export const api = (request, data?: Record<string, unknown>) => {
     let body = {};
     let status = 500;
     // console.log(request.request.method);
-    
+
     switch (request.request.method.toUpperCase()) {
         case "GET":
             body = todos;
@@ -18,7 +18,7 @@ export const api = (request, data?: Record<string, unknown>) => {
             body = data;
             status = 201;
             break;
-        
+
         case "DELETE":
             todos = todos.filter(todo => todo.uid !== request.params.uid)
             status = 200;
@@ -26,8 +26,9 @@ export const api = (request, data?: Record<string, unknown>) => {
 
         case "PATCH":
             todos = todos.map(todo => {
-                if(todo.uid === request.params.uid){
-                    todo.text = data.text as string;
+                if (todo.uid === request.params.uid) {
+                    if (data.text) todo.text = data.text as string;
+                    else todo.done = data.done as boolean;
                 }
                 return todo;
             });
@@ -38,7 +39,7 @@ export const api = (request, data?: Record<string, unknown>) => {
             break;
     }
 
-    if(request.request.method.toUpperCase() !== "GET") {
+    if (request.request.method.toUpperCase() !== "GET") {
         return {
             status: 303,
             headers: {
