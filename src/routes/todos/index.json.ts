@@ -1,26 +1,17 @@
 import type { RequestHandler } from "@sveltejs/kit"
 
-let todos: Todo[] = [];
+import { api } from "./_api"
 
-export const get: RequestHandler = () => {
-    return {
-        status: 200,
-        body: todos
-    }
+export const get = (request) => {
+    return api(request)
 }
 
-export const post: RequestHandler = async (request) => {
+export const post = async (request) => {
     const data = await request.request.formData()
-    todos.push({
+    return api(request, {
+        uid: `${Date.now()}`, // TODO: Replcae with UID from db
         created_at: new Date(),
         text: data.get("text").toString(),
         done: false
-    });
-    // console.log(data.get("text"));
-    return {
-        status: 303,
-        headers: {
-            location: "/"
-        }
-    }
+    })
 }
