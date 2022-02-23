@@ -1,5 +1,3 @@
----
-# For more details, please see https://www.gitpod.io/docs/references/gitpod-yml
 image: gitpod/workspace-postgres
 
 tasks:
@@ -12,6 +10,7 @@ tasks:
   - command: npx prisma studio
     env:
       DATABASE_URL: postgres://gitpod@localhost/todos
+  
 
 ports:
   - port: 3000

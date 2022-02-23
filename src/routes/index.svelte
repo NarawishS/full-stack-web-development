@@ -1,20 +1,22 @@
 <script context="module" lang="ts">
-    import type { Load } from "@sveltejs/kit"
+    import type { Load } from "@sveltejs/kit";
     import { enhance } from "$lib/actions/form";
 
     export const load: Load = async ({ fetch }) => {
         const res = await fetch("/todos.json");
+
         if (res.ok) {
             const todos = await res.json();
             return {
                 props: { todos }
             }
         }
+
         const { message } = await res.json();
         return {
-          error: new Error(message)
+            error: new Error(message)
         }
-  }
+    };
 </script>
 
 <script lang="ts">
@@ -24,7 +26,7 @@
 
     const title = "Todo";
 
-    const processNewTodoResult = async (res: Response, form: HTMLFormElement) => {
+    const processNewTodoResult = async (res: Response, form:HTMLFormElement) => {
         const newTodo = await res.json();
         todos = [...todos, newTodo];
 
@@ -34,11 +36,10 @@
     const processUpdatedTodoResult = async (res: Response) => {
         const updatedTodo = await res.json();
         todos = todos.map(t => {
-            if(t.uid === updatedTodo.uid) return updatedTodo;
+            if (t.uid === updatedTodo.uid) return updatedTodo;
             return t;
         })
     };
-
 </script>
 
 <style>
@@ -55,11 +56,11 @@
     .new input {
         font-size: 28px;
         width: 100%;
-        padding: 0.5em 1em 0.3em 1em;
+        padding: 0.5rem 1em 0.3em 1em;
         box-sizing: border-box;
-		background: rgba(255, 255, 255, 0.05);
-		border-radius: 8px;
-		text-align: center;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        text-align: center;
     }
 
     .todos :global(input) {
@@ -82,20 +83,16 @@
     <h1>{title}</h1>
 
     <form action="/todos.json" method="post" class="new" use:enhance={{
-        result: processNewTodoResult
+        result:processNewTodoResult
     }}>
-        <input type="text" name="text" aria-label="Add a todo" placeholder="+ type to add a todo" /> 
+        <input type="text" name="text" aria-label="Add a todo" placeholder="+ type to add a todo">
     </form>
-
-
+    
     {#each todos as todo}
         <TodoItem 
-            todo={todo} 
-            processDeletedTodoResult={() => {
-                todos = todos.filter(t => t.uid !== todo.uid);
-            }}
-            {processUpdatedTodoResult}
-        />
+        {todo} 
+        processDeletedTodoResult={() => {
+            todos = todos.filter(t => t.uid !== todo.uid);
+        }} />
     {/each}
-
 </div>

@@ -1,41 +1,35 @@
 export const enhance = (form: HTMLFormElement, {
-  result
+    result
 }) => {
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+    const handleSubmit = async (event: Event) => {
+        event.preventDefault();
+        
+        try {
+            const body = new FormData(form);
+            const res = await fetch(form.action, {
+                method: form.method,
+                headers: {
+                    accept: "application/json"
+                },
+                body
+            });
 
-    try {
-      const body = new FormData(form);
+            if (res.ok) {
+                result(res, form);
+            } else {
+                console.error("Fetch error: ", await res.text());
+            }
+        } catch (error) {
+            console.error("Could not submit the form: ", error)
+        }
+    };
 
-      const res = await fetch(form.action, {
-        method: form.method,
-        headers: {
-          accept: "application/json",
-          // "x-content-type-options": "nosniff"
-        },
-        body
-      });
+    form.addEventListener("submit", handleSubmit);
 
-
-
-      if (res.ok) {
-        result(res, form)
-      } else {
-        console.error("Fetch error: ", await res.text());
-      }
+    return {
+        destroy() {
+            form.removeEventListener("submit", handleSubmit);
+        }
     }
-    catch (error) {
-      console.error("Could not submit the form: ", error);
-    }
-  };
-
-  form.addEventListener("submit", handleSubmit)
-
-  return {
-    destroy() {
-      form.removeEventListener("submit", handleSubmit)
-
-    }
-  }
 };
